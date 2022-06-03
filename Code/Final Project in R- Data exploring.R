@@ -46,10 +46,39 @@ ggplot(data = Customertravel) +
 ## Looks that the majority of clients are low and middle income class. 
 
 ##3- Does the annual income class influence churn?
-##0= Customer doesn't Churn  1= Customer Churn
+## 0= Customer doesn't Churn  1= Customer Churn
 ggplot(data = Customertravel) +
   geom_bar(mapping = aes(x= Target, fill=AnnualIncomeClass), position = "dodge")
 ## Middle income seem to be the highest income not churning, followed by low income.
 
-## Normally Distributed
+##4- Income and Services Opted
+ggplot(data = Customertravel) +
+  geom_bar(mapping = aes(x= ServicesOpted, fill=AnnualIncomeClass), position = "dodge")
+
+ggplot(data = Customertravel) +
+  geom_bar(mapping = aes(x= Age, fill=BookedHotelOrNot), position = "dodge")
+
+ggplot(data = Customertravel) +
+  geom_bar(mapping = aes(x= Age, fill=AccountSyncedToSocialMedia), position = "dodge")
+
+##Is there a correlation between Age and Target
+d <- ggplot(Customertravel, aes(x=Age, y=Target))
+d + geom_point() + geom_smooth(method=lm, se=FALSE)
+## There is no correlation between Age of the customers and Churn.
+
+d <- ggplot(Customertravel, aes(x = AnnualIncomeClass, y = Age ))
+d + geom_point() + geom_smooth(method=lm, se=FALSE)
+
+## Normally Distributed?
 ggplot(Customertravel, aes(sample = Age)) + geom_qq()
+
+head(Customertravel)
+
+lin_reg <- lm(AnnualIncomeClass ~ Target, Customertravel)
+print(lin_reg)
+
+summary(lin_reg)
+
+## Since P-value is greater than .05 there is no significance, therefore there is "0" correlation. 
+
+
