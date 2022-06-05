@@ -81,4 +81,28 @@ summary(lin_reg)
 
 ## Since P-value is greater than .05 there is no significance, therefore there is "0" correlation. 
 
+## Data Testing Assumptions : Does Age influence Churn?
 
+##Independent Chi-Square
+install.packages("gmodels")
+library("gmodels")
+
+CrossTable(Customertravel$Age, Customertravel$Target, fisher=TRUE
+, chisq = TRUE, expected = TRUE, sresid = TRUE, format = "SPSS")
+
+
+## Since P-value is less than .05, this means that this analysis is significant, age does influence Target/ Churn.
+## Some ages have a Std Residual above/below 2, Does this make ut more prone to churn?
+
+CrossTable(Customertravel$AnnualIncomeClass, Customertravel$Target, fisher=TRUE
+           , chisq = TRUE, expected = TRUE, sresid = TRUE, format = "SPSS")
+
+##Goodness of Fit Chi-Squares
+
+library(dplyr)
+
+Customertravel%>% group_by(AccountSyncedToSocialMedia) %>% summarize(count=n())
+observed=c(360,594)
+expected=c(.15, .85)
+chisq.test(x=observed, p = expected)
+## Since the P-value is less than .05 it seems that the sample is more or less confused compared to most of the population.
