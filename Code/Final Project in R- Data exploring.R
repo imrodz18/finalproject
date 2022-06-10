@@ -37,7 +37,7 @@ head(ct_HighIncome)
 ggplot(data = Customertravel) +
   geom_bar(mapping = aes(x= Age, fill=FrequentFlyer), position = "dodge")
 
-## According to the data customers are not Frequent Flyers. With the most ranging at 30yrs old. 
+## According to the data the mojority of customers are not Frequent Flyers, with the most ranging at 30yrs old. 
 
 ##2- What are the most relevant income among customers?
 ggplot(data = Customertravel) +
@@ -60,6 +60,11 @@ ggplot(data = Customertravel) +
 
 ggplot(data = Customertravel) +
   geom_bar(mapping = aes(x= Age, fill=AccountSyncedToSocialMedia), position = "dodge")
+
+ggplot(data = Customertravel) +
+  geom_bar(mapping = aes(x= Age, fill=Target), position = "dodge")
+## I am not able to see 
+
 
 ##Is there a correlation between Age and Target
 d <- ggplot(Customertravel, aes(x=Age, y=Target))
@@ -97,7 +102,7 @@ CrossTable(Customertravel$Age, Customertravel$Target, fisher=TRUE
 CrossTable(Customertravel$AnnualIncomeClass, Customertravel$Target, fisher=TRUE
            , chisq = TRUE, expected = TRUE, sresid = TRUE, format = "SPSS")
 
-##Goodness of Fit Chi-Squares
+##Goodness of Fit Chi-Square
 
 library(dplyr)
 
@@ -106,3 +111,48 @@ observed=c(360,594)
 expected=c(.15, .85)
 chisq.test(x=observed, p = expected)
 ## Since the P-value is less than .05 it seems that the sample is more or less confused compared to most of the population.
+
+## Grouping Age and Target, to see if its influence.
+##ggplot(Customertravel, aes(Target, Age, colour = Target)) + 
+##  geom_point()
+
+Customertravel %>% 
+  count(Age)
+breaks <- c(27,28,29,30,31,33,34,35, 36,37,38,39)
+AgeGroups <- c("[27-29)", "[30-31)", "[33-34)", "[35-36)", "[37-38)")
+ggplot (Customertravel = as_tibble((group_tags)))
+summary(AgeGroups)
+
+Customertravel
+
+group_tags <- cut (Customertravel$Age,
+                  breaks = breaks,
+                  include.lowest = TRUE,
+                  right = FALSE,
+                  labels = AgeGroups)
+
+ggplot(Customertravel = as_tibble(Age), mapping = aes(x=AgeGroups))
+       geom_point()
+
+summary(Customertravel)
+
+d <- ggplot(Customertravel, aes(x = AgeGroups, y = Target ))
+d + geom_point() + geom_smooth(method=lm, se=FALSE) 
+
+
+ggplot(data=Customertravel) +
+  geom_bar(mapping = aes(x = Age, fill= Target)) + 
+  ggtitle("Sales Categories by Salary Level") +
+  xlab("Sales Category") +
+  ylab("Frequency")  
+
+ggplot(data=Customertravel) +
+  geom_bar(mapping = aes(x = Target, fill=Age), position = "fill") + 
+  ggtitle("Target by Age") +
+  xlab("Age") +
+  ylab("Frequency")  
+
+
+Customertravel$Target <- ifelse(Customertravel$Target == "1","0", "Yes", "No")
+Customertravel$Target <- ifelse(Customertravel$Target == "1","0", "No")
+
