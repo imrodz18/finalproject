@@ -96,7 +96,7 @@ summary(lin_reg)
 install.packages("gmodels")
 library("gmodels")
 
-CrossTable(Customertravel$Age, Customertravel$Target, fisher=TRUE
+CrossTable(Customertravel$AnnualIncomeClass, Customertravel$Target, fisher=TRUE
 , chisq = TRUE, expected = TRUE, sresid = TRUE, format = "SPSS")
 
 
@@ -207,13 +207,18 @@ ggplot(CT_MiddleIncome) + geom_bar(aes(x = AccountSyncedToSocialMedia, fill= Tar
 ggplot(CT_MiddleIncome) + geom_bar(aes(x = Age, fill= AccountSyncedToSocialMedia )) +
   ylab("Count") + ggtitle("Middle Income by AccountSyncedToSocialMedia and Target")
 
-## Low Income filtered to cpmapre with other variables
+## Low Income filtered to compare with other variables
 CT_LowIncome<- filter(Customertravel, AnnualIncomeClass == "Low Income")
 head(CT_LowIncome)
 
 ggplot(CT_LowIncome) + geom_bar(aes(x = Age, fill= Target)) +
   ylab("Count") + ggtitle("Low Income by Age and Target")
 
+ggplot(CT_LowIncome) + geom_bar(aes(x = AccountSyncedToSocialMedia, fill= Target)) +
+  ylab("Count") + ggtitle("Low Income by Accounts Synched to Social Media and Target")
+
+ggplot(CT_LowIncome) + geom_bar(aes(x = ServicesOpted, fill= Target)) +
+  ylab("Count") + ggtitle("Low Income by ServicesOpted and Target")
 
 ggplot(Customertravel, aes(sample = Age)) + geom_qq()
 
@@ -222,3 +227,50 @@ ggplot(Customertravel, aes(sample = ServicesOpted)) + geom_qq()
 ##Chi- Square to test Relationship between Income and Target
 CrossTable(Customertravel$AnnualIncomeClass, Customertravel$Target, fisher=TRUE
            , chisq = TRUE, expected = TRUE, sresid = TRUE, format = "SPSS")
+
+Customertravel%>% group_by(Target) %>% summarize(count=n())
+observed=c(224,730)
+expected=c(.15, .85)
+chisq.test(x=observed, p = expected)
+
+library("caret")
+library("magrittr")
+library("dplyr")
+library("tidyr")
+library("lmtest")
+library("popbio")
+library("e1071")
+
+CT_Step = lm(Age ~., data= Customertravel)
+summary(CT_Step)
+
+step(CT_Step, diresction = 'backward')
+
+CT_Back = lm(Age ~ AnnualIncomeClass + FrequentFlyer + Target, data = Customertravel)
+CT_Back
+
+CT_H= lm(Age ~1, data= Customertravel)
+summary(CT_H)
+
+step(CT_H, direction = 'forward', scope = (~ Target + AnnualIncomeClass + FrequentFlyer))
+
+CT_H2 = lm(Age ~ Target + FrequentFlyer + AnnualIncomeClass, data = Customertravel)
+summary(CT_H2)
+
+CT_Age<- filter(Customertravel, Age == "27")
+head(CT_Age)
+CT_Age2<- filter(Customertravel, Age == "28")
+head(CT_Age2)
+
+ggplot(CT_Age2) + geom_bar(aes(x = ServicesOpted, fill= Target)) +
+  ylab("Count") + ggtitle("Age by Services Optedand Target")
+CT_Age2
+
+CT_Age3<- filter(Customertravel, Age == "30")
+head(CT_Age3)
+
+ggplot(CT_Age3) + geom_bar(aes(x = AnnualIncomeClass, fill= Target)) +
+  ylab("Count") + ggtitle("30 yrs old by AnnualIncomeClass and Target")
+CT_Age3
+
+
