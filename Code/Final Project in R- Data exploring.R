@@ -3,8 +3,12 @@ library("dplyr")
 
 ## Data Exploration
 
-ggplot(data = Customertravel) +
-  geom_bar(mapping = aes(x= Age, fill=Target), position = "dodge")
+ggplot(dat = Customertravel) +
+geom_bar(mapping = aes(x= Age, fill=Target), position = "dodge") +
+  ggtitle()
+
+  
+
 
 summarize(Customertravel, Churn_ave = mean())
 
@@ -67,7 +71,7 @@ ggplot(data = Customertravel) +
 
 
 ##Is there a correlation between Age and Target
-d <- ggplot(Customertravel, aes(x=Age, y=Target))
+d<-ggplot(Customertravel, aes(x=Age, y=Target))
 d + geom_point() + geom_smooth(method=lm, se=FALSE)
 ## There is no correlation between Age of the customers and Churn.
 
@@ -110,18 +114,19 @@ Customertravel%>% group_by(AccountSyncedToSocialMedia) %>% summarize(count=n())
 observed=c(360,594)
 expected=c(.15, .85)
 chisq.test(x=observed, p = expected)
+
 ## Since the P-value is less than .05 it seems that the sample is more or less confused compared to most of the population.
 
 ## Grouping Age and Target, to see if its influence.
 ##ggplot(Customertravel, aes(Target, Age, colour = Target)) + 
 ##  geom_point()
 
-Customertravel %>% 
-  count(Age)
-breaks <- c(27,28,29,30,31,33,34,35, 36,37,38,39)
-AgeGroups <- c("[27-29)", "[30-31)", "[33-34)", "[35-36)", "[37-38)")
-ggplot (Customertravel = as_tibble((group_tags)))
-summary(AgeGroups)
+##Customertravel %>% 
+##  count(Age)
+##breaks <- c(27,28,29,30,31,33,34,35, 36,37,38,39)
+##AgeGroups <- c("[27-29)", "[30-31)", "[33-34)", "[35-36)", "[37-38)")
+##ggplot (Customertravel = as_tibble((group_tags)))
+##summary(AgeGroups)
 
 Customertravel
 
@@ -150,9 +155,70 @@ ggplot(data=Customertravel) +
   geom_bar(mapping = aes(x = Target, fill=Age), position = "fill") + 
   ggtitle("Target by Age") +
   xlab("Age") +
-  ylab("Frequency")  
+  ylab("Frequency") 
+
+## Finding Age and Target ( Churn)
+ggplot(dat = Customertravel) +
+  geom_bar(mapping = aes(x= Age, fill=ServiceOpted), position = "dodge") +
+  ggtitle("Which Age group Churn the most?
+          0=Customer not Churn & 1= Customer Churn")
+
+## HighIncome filtered to compare with other variables
+CT_HighIncome<- filter(Customertravel, AnnualIncomeClass == "High Income")
+head(CT_HighIncome)
 
 
-Customertravel$Target <- ifelse(Customertravel$Target == "1","0", "Yes", "No")
-Customertravel$Target <- ifelse(Customertravel$Target == "1","0", "No")
+ggplot(CT_HighIncome) + geom_bar(aes(x = Age, fill= Target)) +
+  ylab("Count") + ggtitle("High Income by Age and Target")
 
+ggplot(CT_HighIncome) + geom_bar(aes(x = FrequentFlyer, fill= Target)) +
+  ylab("Count") + ggtitle("High Income by FrequentFlyer and Target")
+##All high income clients are frequent flyers! There is a possibility that is only used for business which is why they only used one service.
+
+ggplot(CT_HighIncome) + geom_bar(aes(x = ServicesOpted, fill= Target)) +
+  ylab("Count") + ggtitle("High Income by ServicesOpted and Target")
+##I can see here that clients with a higher income picked only one service and that half of it still Churned.We don't know the time frame that this data was taken. What I can assume is that probably the clients that used more 
+## service received a better deal then decided to opted out because didn't really see an used.
+
+ggplot(CT_HighIncome) + geom_bar(aes(x = AccountSyncedToSocialMedia, fill= Target)) +
+  ylab("Count") + ggtitle("High Income by Accounts Synched to Social Media and Target")
+
+##Middle Income filtered to compare with other variables.
+CT_MiddleIncome<- filter(Customertravel, AnnualIncomeClass == "Middle Income")
+head(CT_MiddleIncome)
+
+ggplot(CT_MiddleIncome) + geom_bar(aes(x = Age, fill= Target)) +
+  ylab("Count") + ggtitle("Middle Income by Age and Target")
+##Middle Income Clients didn't Churn 
+
+ggplot(CT_MiddleIncome) + geom_bar(aes(x = FrequentFlyer, fill= Target)) +
+  ylab("Count") + ggtitle("Middle Income by FrequentFlyer and Target")
+
+ggplot(CT_MiddleIncome) + geom_bar(aes(x = Age, fill= FrequentFlyer)) +
+  ylab("Count") + ggtitle("Middle Income by FrequentFlyer and Target")
+
+ggplot(CT_MiddleIncome) + geom_bar(aes(x = ServicesOpted, fill= Target)) +
+  ylab("Count") + ggtitle("Middle Income by ServicesOpted and Target")
+
+ggplot(CT_MiddleIncome) + geom_bar(aes(x = AccountSyncedToSocialMedia, fill= Target)) +
+  ylab("Count") + ggtitle("Middle Income by Accounts Synched to Social Media and Target")
+##Accounts not being synched to social media did not impact clients staying with the company. 
+
+ggplot(CT_MiddleIncome) + geom_bar(aes(x = Age, fill= AccountSyncedToSocialMedia )) +
+  ylab("Count") + ggtitle("Middle Income by AccountSyncedToSocialMedia and Target")
+
+## Low Income filtered to cpmapre with other variables
+CT_LowIncome<- filter(Customertravel, AnnualIncomeClass == "Low Income")
+head(CT_LowIncome)
+
+ggplot(CT_LowIncome) + geom_bar(aes(x = Age, fill= Target)) +
+  ylab("Count") + ggtitle("Low Income by Age and Target")
+
+
+ggplot(Customertravel, aes(sample = Age)) + geom_qq()
+
+ggplot(Customertravel, aes(sample = ServicesOpted)) + geom_qq()
+
+##Chi- Square to test Relationship between Income and Target
+CrossTable(Customertravel$AnnualIncomeClass, Customertravel$Target, fisher=TRUE
+           , chisq = TRUE, expected = TRUE, sresid = TRUE, format = "SPSS")
